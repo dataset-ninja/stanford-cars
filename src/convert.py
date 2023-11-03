@@ -1,15 +1,17 @@
-from collections import defaultdict
-import supervisely as sly
-import scipy
 import csv
 import os
-from dataset_tools.convert import unpack_if_archive
-import src.settings as s
-from urllib.parse import unquote, urlparse
-from supervisely.io.fs import get_file_name, get_file_name_with_ext
 import shutil
+from collections import defaultdict
+from urllib.parse import unquote, urlparse
 
+import scipy
+import supervisely as sly
+from dataset_tools.convert import unpack_if_archive
+from supervisely.io.fs import get_file_name, get_file_name_with_ext
 from tqdm import tqdm
+
+import src.settings as s
+
 
 def download_dataset(teamfiles_dir: str) -> str:
     """Use it for large datasets to convert them on the instance"""
@@ -113,8 +115,9 @@ def convert_and_upload_supervisely_project(
     idx_to_class = {0: car}
     classes_names = mat["class_names"][0]
     for idx, class_name_arr in enumerate(classes_names):
-        class_name = str(class_name_arr[0])
-        obj_class = sly.ObjClass(class_name, sly.Rectangle)
+        class_name = str(class_name_arr[0]).lower()
+        class_name_corr = "_".join(class_name.split())
+        obj_class = sly.ObjClass(class_name_corr, sly.Rectangle)
         idx_to_class[idx + 1] = obj_class
 
     train_name_to_ann = defaultdict(list)
